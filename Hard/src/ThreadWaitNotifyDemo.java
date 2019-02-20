@@ -3,28 +3,43 @@
  * 另一个线程对该变量-1,交替10轮，变量初始值为0
  *1.高内聚，低耦合，线程操作资源类
  *2.判断 干活 通知
+ *3.避免虚假唤醒（此demo为错误实例，判断应使用while）
  */
 public class ThreadWaitNotifyDemo {
     public static void main(String[] args) {
         ShareData shareData = new ShareData();
-        new Thread(()->{
-            for (int i = 1; i <= 10 ; i++) {
+        new Thread(() -> {
+            for (int i = 1; i <= 10 ; i++)
                 try {
                     shareData.increment();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            }
         },"A").start();
-        new Thread(()->{
-            for (int i = 1; i <= 10 ; i++) {
+        new Thread(() -> {
+            for (int i = 1; i <= 10 ; i++)
                 try {
                     shareData.decrement();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            }
         },"B").start();
+        new Thread(() -> {
+            for (int i = 1; i <= 10 ; i++)
+                try {
+                    shareData.increment();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+        },"C").start();
+        new Thread(() -> {
+            for (int i = 1; i <= 10 ; i++)
+                try {
+                    shareData.decrement();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+        },"D").start();
     }
 }
 class ShareData{
